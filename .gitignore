@@ -10,3 +10,5 @@ build/
 .scannerwork/
 examples/single-module-nodejs/node_modules
 examples/single-module-nodejs/reports
+examples/**/obj/*
+examples/**/bin/*
