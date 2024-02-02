@@ -33,6 +33,7 @@ import org.sonar.dependencycheck.reason.DependencyReason;
 import org.sonar.dependencycheck.reason.Language;
 import org.sonar.dependencycheck.reason.SoftwareDependency;
 import org.sonar.dependencycheck.reason.maven.MavenDependency;
+import org.sonar.dependencycheck.reason.dotnet.DotNetDependency;
 import org.sonar.dependencycheck.reason.npm.NPMDependency;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -110,6 +111,21 @@ public final class DependencyCheckUtils {
                 Optional<SoftwareDependency> softwareDependency = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
                 if (softwareDependency.isPresent() && softwareDependency.get() instanceof MavenDependency) {
                     return Optional.of((MavenDependency) softwareDependency.get());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+
+    //TODO: make it generic
+    public static Optional<DotNetDependency> getDotNetDependency(@NonNull Dependency dependency) {
+        Optional<Collection<Identifier>> packages = dependency.getPackages();
+        if (packages.isPresent()) {
+            for (Identifier identifier : packages.get()) {
+                Optional<SoftwareDependency> softwareDependency = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
+                if (softwareDependency.isPresent() && softwareDependency.get() instanceof DotNetDependency) {
+                    return Optional.of((DotNetDependency) softwareDependency.get());
                 }
             }
         }
@@ -236,6 +252,10 @@ public final class DependencyCheckUtils {
 
     public static boolean isMavenDependency(@NonNull SoftwareDependency dep) {
         return dep instanceof MavenDependency;
+    }
+
+    public static boolean isDotNetDependency(@NonNull SoftwareDependency dep) {
+        return dep instanceof DotNetDependency;
     }
 
     public static boolean isNPMDependency(@NonNull SoftwareDependency dep) {

@@ -1,6 +1,6 @@
 /*
  * Dependency-Check Plugin for SonarQube
- * Copyright (C) 2015-2024 dependency-check
+ * Copyright (C) 2015-2023 dependency-check
  * philipp.dallig@gmail.com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,37 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.dependencycheck.reason;
 
-public enum Language {
-    JAVA, JAVASCRIPT, C_SHARP
+package org.sonar.dependencycheck.reason.dotnet;
+
+public class DotNetDependencyLocation extends DotNetDependency {
+
+    private final int startLineNr;
+    private final int endLineNr;
+
+    /**
+     * @param name
+     * @param version
+     * @param startLineNr
+     * @param endLineNr
+     */
+    public DotNetDependencyLocation(String name, String version, int startLineNr, int endLineNr) {
+        super(name, version);
+        this.startLineNr = startLineNr;
+        this.endLineNr = endLineNr;
+    }
+
+    /**
+     * @return the startLineNr
+     */
+    public int getStartLineNr() {
+        return startLineNr;
+    }
+
+    /**
+     * @return the endLineNr
+     */
+    public int getEndLineNr() {
+        return endLineNr;
+    }
 }

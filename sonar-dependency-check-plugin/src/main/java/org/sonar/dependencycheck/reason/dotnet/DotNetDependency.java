@@ -1,6 +1,6 @@
 /*
  * Dependency-Check Plugin for SonarQube
- * Copyright (C) 2015-2024 dependency-check
+ * Copyright (C) 2015-2023 dependency-check
  * philipp.dallig@gmail.com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,17 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.dependencycheck.reason;
 
-public enum Language {
-    JAVA, JAVASCRIPT, C_SHARP
+package org.sonar.dependencycheck.reason.dotnet;
+
+import org.sonar.dependencycheck.reason.SoftwareDependency;
+
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
+public class DotNetDependency extends SoftwareDependency {
+
+    public DotNetDependency(@NonNull String name, @Nullable String version) {
+        super(name, version);
+    }
 }
