@@ -59,7 +59,7 @@ public class DotNetDependencyReason extends DependencyReason {
         try {
             csprojModel = CSProjParserHelper.parse(csproj.inputStream());
         } catch (ReportParserException | IOException e) {
-            LOGGER.warn("Parsing {} failed", pom);
+            LOGGER.warn("Parsing {} failed", csproj);
             LOGGER.debug(e.getMessage(), e);
         }
     }
@@ -72,13 +72,13 @@ public class DotNetDependencyReason extends DependencyReason {
             if (dotNetDependncy.isPresent()) {
                 fillArtifactMatch(dependency, dotNetDependncy.get());
             } else {
-                LOGGER.debug("No Identifier with type maven found for Dependency {}", dependency.getFileName());
+                LOGGER.debug("No Identifier with type NuGet found for Dependency {}", dependency.getFileName());
             }
             Optional<Collection<IncludedBy>> includedBys = dependency.getIncludedBy();
             if (includedBys.isPresent()) {
                 workOnIncludedBy(dependency, includedBys.get());
             }
-            dependencyMap.computeIfAbsent(dependency, k -> addDependencyToFirstLine(k, pom));
+            dependencyMap.computeIfAbsent(dependency, k -> addDependencyToFirstLine(k, csproj));
         }
         return dependencyMap.get(dependency);
     }
@@ -101,7 +101,7 @@ public class DotNetDependencyReason extends DependencyReason {
      */
     private void fillArtifactMatch(@NonNull Dependency dependency, DotNetDependency dotNetDependency) {
         for (DotNetDependencyLocation dotNetDependencyLocation : csprojModel.getDependencies()) {
-            checkPomDependency(dotNetDependency, dotNetDependencyLocation)
+            checkCsProjDependency(dotNetDependency, dotNetDependencyLocation)
                 .ifPresent(textRange -> putDependencyMap(dependency, textRange));
         }
     }
@@ -117,45 +117,36 @@ public class DotNetDependencyReason extends DependencyReason {
         }
     }
 
-    private Optional<TextRangeConfidence> checkPomDependency(MavenDependency mavenDependency, MavenDependencyLocation mavenDependencyLocation) {
-        if (StringUtils.equals(mavenDependency.getArtifactId(), mavenDependencyLocation.getArtifactId())
-            && StringUtils.equals(mavenDependency.getGroupId(), mavenDependencyLocation.getGroupId())) {
-            Optional<String> depVersion = mavenDependency.getVersion();
-            Optional<String> depLocVersion = mavenDependencyLocation.getVersion();
+    private Optional<TextRangeConfidence> checkCsProjDependency(DotNetDependency dotNetDependency, DotNetDependencyLocation dotNetDependencyLocation) {
+        if (StringUtils.equals(dotNetDependency.getName(), dotNetDependencyLocation.getName())) {
+            Optional<String> depVersion = dotNetDependency.getVersion();
+            Optional<String> depLocVersion = dotNetDependencyLocation.getVersion();
             if (depVersion.isPresent() && depLocVersion.isPresent() &&
                 StringUtils.equals(depVersion.get(), depLocVersion.get())) {
-                LOGGER.debug("Found a artifactId, groupId and version match in {} ({} - {})", pom, mavenDependencyLocation.getStartLineNr(), mavenDependencyLocation.getEndLineNr());
-                return Optional.of(new TextRangeConfidence(pom.newRange(pom.selectLine(mavenDependencyLocation.getStartLineNr()).start(), pom.selectLine(mavenDependencyLocation.getEndLineNr()).end()), Confidence.HIGHEST));
+                LOGGER.debug("Found a name and version match in {} ({} - {})", csproj, dotNetDependencyLocation.getStartLineNr(), dotNetDependencyLocation.getEndLineNr());
+                return Optional.of(new TextRangeConfidence(csproj.newRange(csproj.selectLine(dotNetDependencyLocation.getStartLineNr()).start(), csproj.selectLine(dotNetDependencyLocation.getEndLineNr()).end()), Confidence.HIGHEST));
             }
-            LOGGER.debug("Found a artifactId and groupId match in {} ({} - {})", pom, mavenDependencyLocation.getStartLineNr(), mavenDependencyLocation.getEndLineNr());
-            return Optional.of(new TextRangeConfidence(pom.newRange(pom.selectLine(mavenDependencyLocation.getStartLineNr()).start(), pom.selectLine(mavenDependencyLocation.getEndLineNr()).end()), Confidence.HIGH));
+            LOGGER.debug("Found a name match in {} ({} - {})", csproj, dotNetDependencyLocation.getStartLineNr(), dotNetDependencyLocation.getEndLineNr());
+            return Optional.of(new TextRangeConfidence(csproj.newRange(csproj.selectLine(dotNetDependencyLocation.getStartLineNr()).start(), csproj.selectLine(dotNetDependencyLocation.getEndLineNr()).end()), Confidence.HIGH));
         }
-        if (StringUtils.equals(mavenDependency.getArtifactId(), mavenDependencyLocation.getArtifactId())) {
-            LOGGER.debug("Found a artifactId match in {} ({} - {})", pom, mavenDependencyLocation.getStartLineNr(), mavenDependencyLocation.getEndLineNr());
-            return Optional.of(new TextRangeConfidence(pom.newRange(pom.selectLine(mavenDependencyLocation.getStartLineNr()).start(), pom.selectLine(mavenDependencyLocation.getEndLineNr()).end()), Confidence.MEDIUM));
-        }
-        if (StringUtils.equals(mavenDependency.getGroupId(), mavenDependencyLocation.getGroupId())) {
-            LOGGER.debug("Found a groupId match in {} ({} - {})", pom, mavenDependencyLocation.getStartLineNr(), mavenDependencyLocation.getEndLineNr());
-            return Optional.of(new TextRangeConfidence(pom.newRange(pom.selectLine(mavenDependencyLocation.getStartLineNr()).start(), pom.selectLine(mavenDependencyLocation.getEndLineNr()).end()), Confidence.MEDIUM));
-        }
-         return Optional.empty();
+        return Optional.empty();
     }
 
     /**
-     * Checks if we have a pom File and this pom file is readable and has content
-     * Pom Files contains the in maven builds the dependencies
+     * Checks if we have a CSProj File and this CSProj file is readable and has content
+     * CSProj Files contains the in NuGet builds the dependencies
      */
     @Override
     public boolean isReasonable() {
-        return pom != null && pomModel != null;
+        return csproj != null && csprojModel != null;
     }
 
     /**
-     * returns pom file
+     * returns csproj file
      */
     @NonNull
     @Override
     public InputComponent getInputComponent() {
-        return pom;
+        return csproj;
     }
 }

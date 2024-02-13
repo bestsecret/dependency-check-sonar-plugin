@@ -84,11 +84,11 @@ public class DependencyReasonSearcher {
                 LOGGER.debug("Found unreasonable npm file {}", npmReason);
             }
         }
-        String[] dotnetProjPathPatterns = {"**/*.csproj"};
-        Iterable<InputFile> csprojs = context.fileSystem().inputFiles(context.fileSystem().predicates().matchesPathPattern(dotnetProjPathPatterns));
+        String dotnetProjPathPattern = "**/*.csproj";
+        Iterable<InputFile> csprojs = context.fileSystem().inputFiles(context.fileSystem().predicates().matchesPathPattern(dotnetProjPathPattern));
         for (InputFile csproj : csprojs) {
-            DependencyReason csprojReason = new DotNetDependencyReason(pom);
-            if (pomReason.isReasonable()) {
+            DependencyReason csprojReason = new DotNetDependencyReason(csproj);
+            if (csprojReason.isReasonable()) {
                 dependencyReasons.add(csprojReason);
                 LOGGER.debug("Found reasonable csproj file {}", csproj);
             } else {

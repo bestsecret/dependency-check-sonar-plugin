@@ -48,6 +48,7 @@ public class DotNetDependencyDeserializer extends StdDeserializer<List<DotNetDep
         super(vc);
     }
 
+    //TODO: look for the dependencies here (parse the CSProj)
     @Override
     public List<DotNetDependencyLocation> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         List<DotNetDependencyLocation> dependencies = new LinkedList<>();
@@ -67,7 +68,7 @@ public class DotNetDependencyDeserializer extends StdDeserializer<List<DotNetDep
                     }
                 }
                 int endLineNr = jsonParser.getCurrentLocation().getLineNr();
-                dependencies.add(new DotNetDependencyLocation(groupId, artifactId, version, startLineNr, endLineNr));
+                dependencies.add(new DotNetDependencyLocation(name, version, startLineNr, endLineNr));
             }
         }
         return dependencies;
