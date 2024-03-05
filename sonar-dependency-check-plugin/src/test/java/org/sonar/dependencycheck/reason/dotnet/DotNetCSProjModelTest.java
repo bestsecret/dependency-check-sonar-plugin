@@ -20,32 +20,18 @@
 
 package org.sonar.dependencycheck.reason.dotnet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
-import java.util.List;
 
-import org.sonar.dependencycheck.parser.deserializer.DotNetDependencyDeserializer;
+import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+class DotNetCSProjModelTest {
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class DotNetCSProjModel {
-    private final List<DotNetDependencyLocation> dependencies;
-
-    /**
-     * @param dependencies
-     */
-    @JsonCreator
-    public DotNetCSProjModel(@JsonDeserialize(using = DotNetDependencyDeserializer.class ) @Nullable List<DotNetDependencyLocation> dependencies) {
-        this.dependencies = dependencies == null ? Collections.emptyList() : dependencies;
+    @Test
+    void dependenciesAreNotNull() {
+        DotNetCSProjModel model = new DotNetCSProjModel(null);
+        assertEquals(Collections.emptyList(), model.getDependencies());
     }
 
-    @NonNull
-    public List<DotNetDependencyLocation> getDependencies() {
-        return dependencies;
-    }
 }

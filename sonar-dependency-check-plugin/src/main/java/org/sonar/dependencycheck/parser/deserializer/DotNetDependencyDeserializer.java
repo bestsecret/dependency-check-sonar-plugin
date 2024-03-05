@@ -48,28 +48,33 @@ public class DotNetDependencyDeserializer extends StdDeserializer<List<DotNetDep
         super(vc);
     }
 
-    //TODO: look for the dependencies here (parse the CSProj)
     @Override
     public List<DotNetDependencyLocation> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         List<DotNetDependencyLocation> dependencies = new LinkedList<>();
-        while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-            if (StringUtils.equalsIgnoreCase("PackageReference", jsonParser.getCurrentName())) {
-                // We found a dependency
-                String name = "";
-                String version = "";
-                int startLineNr = jsonParser.getCurrentLocation().getLineNr();
-                while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                    if (StringUtils.equalsIgnoreCase("artifactId", jsonParser.getCurrentName())) {
-                        name = jsonParser.getValueAsString();
-                    }
 
-                    if (StringUtils.equalsIgnoreCase("version", jsonParser.getCurrentName())) {
-                        version = jsonParser.getValueAsString();
+        while (jsonParser.nextToken() != null) {
+            try {
+                if (StringUtils.equalsIgnoreCase("PackageReference", jsonParser.getCurrentName())) {
+                    // We found a dependency
+                    String name = "";
+                    String version = "";
+                    int startLineNr = jsonParser.getCurrentLocation().getLineNr();
+                    while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                        if (StringUtils.equalsIgnoreCase("Include", jsonParser.getCurrentName())) {
+                            name = jsonParser.nextTextValue();
+                        }
+    
+                        if (StringUtils.equalsIgnoreCase("Version", jsonParser.getCurrentName())) {
+                            version = jsonParser.nextTextValue();
+                        }
                     }
-                }
-                int endLineNr = jsonParser.getCurrentLocation().getLineNr();
-                dependencies.add(new DotNetDependencyLocation(name, version, startLineNr, endLineNr));
+                    int endLineNr = jsonParser.getCurrentLocation().getLineNr();
+                    dependencies.add(new DotNetDependencyLocation(name, version, startLineNr, endLineNr));
+                }                
+            } catch (IllegalStateException e) {
+                ;
             }
+            
         }
         return dependencies;
     }

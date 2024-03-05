@@ -260,9 +260,20 @@ class DependencyCheckUtilsTest {
         Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency("pkg:maven/struts/struts@1.2.8");
         assertTrue(DependencyCheckUtils.isMavenDependency(dep.get()));
         assertFalse(DependencyCheckUtils.isNPMDependency(dep.get()));
+        assertFalse(DependencyCheckUtils.isDotNetDependency(dep.get()));
         assertEquals("struts", ((MavenDependency)dep.get()).getGroupId());
         assertEquals("struts", ((MavenDependency)dep.get()).getArtifactId());
         assertEquals("1.2.8", ((MavenDependency)dep.get()).getVersion().get());
+    }
+
+    @Test
+    void testDotNet() {
+        Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency("pkg:dotnet/EntityFramework@1.8.5");
+        assertFalse(DependencyCheckUtils.isMavenDependency(dep.get()));
+        assertFalse(DependencyCheckUtils.isNPMDependency(dep.get()));
+        assertTrue(DependencyCheckUtils.isDotNetDependency(dep.get()));
+        assertEquals("EntityFramework", dep.get().getName());
+        assertEquals("1.8.5", dep.get().getVersion().get());
     }
 
     @Test
@@ -270,6 +281,7 @@ class DependencyCheckUtilsTest {
         Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency("pkg:npm/braces@1.8.5");
         assertFalse(DependencyCheckUtils.isMavenDependency(dep.get()));
         assertTrue(DependencyCheckUtils.isNPMDependency(dep.get()));
+        assertFalse(DependencyCheckUtils.isDotNetDependency(dep.get()));
         assertEquals("braces", dep.get().getName());
         assertEquals("1.8.5", dep.get().getVersion().get());
     }
@@ -279,6 +291,7 @@ class DependencyCheckUtilsTest {
         Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency("pkg:npm/mime");
         assertFalse(DependencyCheckUtils.isMavenDependency(dep.get()));
         assertTrue(DependencyCheckUtils.isNPMDependency(dep.get()));
+        assertFalse(DependencyCheckUtils.isDotNetDependency(dep.get()));
         assertEquals("mime", dep.get().getName());
         assertFalse(dep.get().getVersion().isPresent());
     }
@@ -288,6 +301,7 @@ class DependencyCheckUtilsTest {
         Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency("pkg:javascript/jquery@2.2.0");
         assertFalse(DependencyCheckUtils.isMavenDependency(dep.get()));
         assertTrue(DependencyCheckUtils.isNPMDependency(dep.get()));
+        assertFalse(DependencyCheckUtils.isDotNetDependency(dep.get()));
         assertEquals("jquery", dep.get().getName());
         assertEquals("2.2.0", dep.get().getVersion().get());
     }

@@ -138,4 +138,16 @@ public class Dependency {
         }
         return false;
     }
+
+    public boolean isNuGetDependency() {
+        if (packages.isPresent()) {
+            for (Identifier identifier : packages.get()) {
+                Optional<SoftwareDependency> dep = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
+                if (dep.isPresent() && DependencyCheckUtils.isDotNetDependency(dep.get())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

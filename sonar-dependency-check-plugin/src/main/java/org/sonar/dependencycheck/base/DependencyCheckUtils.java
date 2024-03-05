@@ -219,6 +219,8 @@ public final class DependencyCheckUtils {
         if (StringUtils.isNotBlank(reference)) {
             if (reference.contains("maven")) {
                 return convertToMavenDependency(reference);
+            } else if (reference.contains("dotnet")) {
+                return convertToDotNetDependency(reference);
             } else if (reference.contains("npm") || reference.contains("javascript")) {
                 return convertToNPMDependency(reference);
             }
@@ -248,6 +250,17 @@ public final class DependencyCheckUtils {
         }
         String version = StringUtils.substringAfter(dependency, "@");
         return Optional.of(new NPMDependency(name, StringUtils.isBlank(version) ? null : version));
+    }
+
+    private static Optional<SoftwareDependency> convertToDotNetDependency(@NonNull String reference) {
+        // pkg:dotnet/EntityFramework@1.1.0 -> EntityFramework@1.1.0
+        String dependency = StringUtils.substringAfter(reference, "/");
+        String name = StringUtils.substringBefore(dependency, "@");
+        if (StringUtils.isBlank(name)) {
+            return Optional.empty();
+        }
+        String version = StringUtils.substringAfter(dependency, "@");
+        return Optional.of(new DotNetDependency(name, StringUtils.isBlank(version) ? null : version));
     }
 
     public static boolean isMavenDependency(@NonNull SoftwareDependency dep) {
