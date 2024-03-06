@@ -68,7 +68,8 @@ public class DotNetDependencyReason extends DependencyReason {
     @NonNull
     public TextRangeConfidence getBestTextRange(@NonNull Dependency dependency) {
         if (!dependencyMap.containsKey(dependency)) {
-            Optional<DotNetDependency> dotNetDependncy = DependencyCheckUtils.getDotNetDependency(dependency);
+            //Optional<DotNetDependency> dotNetDependncy = DependencyCheckUtils.getDotNetDependency(dependency);
+            Optional<DotNetDependency> dotNetDependncy = DependencyCheckUtils.getDependency(dependency, DotNetDependency.class);
             if (dotNetDependncy.isPresent()) {
                 fillArtifactMatch(dependency, dotNetDependncy.get());
             } else {

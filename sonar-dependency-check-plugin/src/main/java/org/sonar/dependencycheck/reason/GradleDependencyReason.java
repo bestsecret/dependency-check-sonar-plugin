@@ -66,7 +66,7 @@ public class GradleDependencyReason extends DependencyReason {
         if (dependencyMap.containsKey(dependency)) {
             return dependencyMap.get(dependency);
         } else {
-            Optional<MavenDependency> mavenDependency = DependencyCheckUtils.getMavenDependency(dependency);
+            Optional<MavenDependency> mavenDependency = DependencyCheckUtils.getDependency(dependency, MavenDependency.class);
             if (mavenDependency.isPresent()) {
                 fillArtifactMatch(dependency, mavenDependency.get());
             } else {

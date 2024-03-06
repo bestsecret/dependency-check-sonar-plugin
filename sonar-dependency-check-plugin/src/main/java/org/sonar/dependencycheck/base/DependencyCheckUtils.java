@@ -104,41 +104,14 @@ public final class DependencyCheckUtils {
             DependencyCheckConstants.CVSS_LOW_SCORE);
     }
 
-    public static Optional<MavenDependency> getMavenDependency(@NonNull Dependency dependency) {
+    public static <T extends SoftwareDependency> Optional<T> getDependency(@NonNull Dependency dependency, Class<T> targetType) {
         Optional<Collection<Identifier>> packages = dependency.getPackages();
+        
         if (packages.isPresent()) {
             for (Identifier identifier : packages.get()) {
                 Optional<SoftwareDependency> softwareDependency = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
-                if (softwareDependency.isPresent() && softwareDependency.get() instanceof MavenDependency) {
-                    return Optional.of((MavenDependency) softwareDependency.get());
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-
-    //TODO: make it generic
-    public static Optional<DotNetDependency> getDotNetDependency(@NonNull Dependency dependency) {
-        Optional<Collection<Identifier>> packages = dependency.getPackages();
-        if (packages.isPresent()) {
-            for (Identifier identifier : packages.get()) {
-                Optional<SoftwareDependency> softwareDependency = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
-                if (softwareDependency.isPresent() && softwareDependency.get() instanceof DotNetDependency) {
-                    return Optional.of((DotNetDependency) softwareDependency.get());
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-    public static Optional<NPMDependency> getNPMDependency(@NonNull Dependency dependency) {
-        Optional<Collection<Identifier>> packages = dependency.getPackages();
-        if (packages.isPresent()) {
-            for (Identifier identifier : packages.get()) {
-                Optional<SoftwareDependency> softwareDependency = DependencyCheckUtils.convertToSoftwareDependency(identifier.getId());
-                if (softwareDependency.isPresent() && softwareDependency.get() instanceof NPMDependency) {
-                    return Optional.of((NPMDependency) softwareDependency.get());
+                if (softwareDependency.isPresent() && targetType.isInstance(softwareDependency.get())) {
+                    return Optional.of(targetType.cast(softwareDependency.get()));
                 }
             }
         }

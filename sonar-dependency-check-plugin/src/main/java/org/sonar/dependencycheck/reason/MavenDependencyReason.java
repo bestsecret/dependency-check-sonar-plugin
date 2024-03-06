@@ -68,7 +68,7 @@ public class MavenDependencyReason extends DependencyReason {
     @NonNull
     public TextRangeConfidence getBestTextRange(@NonNull Dependency dependency) {
         if (!dependencyMap.containsKey(dependency)) {
-            Optional<MavenDependency> mavenDependency = DependencyCheckUtils.getMavenDependency(dependency);
+            Optional<MavenDependency> mavenDependency = DependencyCheckUtils.getDependency(dependency, MavenDependency.class);
             if (mavenDependency.isPresent()) {
                 fillArtifactMatch(dependency, mavenDependency.get());
             } else {

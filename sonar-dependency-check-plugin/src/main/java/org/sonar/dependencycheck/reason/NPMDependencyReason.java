@@ -77,7 +77,7 @@ public class NPMDependencyReason extends DependencyReason {
     @Override
     public TextRangeConfidence getBestTextRange(Dependency dependency) {
         if (!dependencyMap.containsKey(dependency)) {
-            Optional<NPMDependency> npmDependency = DependencyCheckUtils.getNPMDependency(dependency);
+            Optional<NPMDependency> npmDependency = DependencyCheckUtils.getDependency(dependency, NPMDependency.class);
             if (npmDependency.isPresent()) {
                 fillArtifactMatch(dependency, npmDependency.get());
             } else {
